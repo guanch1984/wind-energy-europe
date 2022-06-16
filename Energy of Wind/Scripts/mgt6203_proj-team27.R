@@ -4,7 +4,7 @@ rm(list = ls())
 library(tidyverse)
 library(car)
 
-data = read.csv(file = 'owid-energy-data.csv', head=TRUE, sep=',')
+data = read.csv(file = 'data/owid-energy-data.csv', head=TRUE, sep=',')
 # 15 years projection
 future_year = data.frame('year'=c(2022:2036))
 model_col = c('year', 'country', 'wind_electricity', 'gdp', 'population')
@@ -96,3 +96,38 @@ lines(model4_total[,'year']-15, model4_total[,'wind_electricity'], col='red', lt
 legend(1986, 400, legend=c("Germany", "Poland"),
        col=c("orange", "red"), lty=1:2, lwd=2:2, cex=0.8)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+# China Case
+data_china = data[data['country']=='China',]
+# Electricity generation from wind, measured in terawatt-hours
+mask_has = data_poland['wind_electricity']>0
+mask_na = is.na(data_poland['wind_electricity'])
+
+data_china_wind = data_china[!mask_na & mask_has, model_col]
+
+model5 = lm(wind_electricity~year, data_china_wind)
+bc.model5 = boxCox(model5)
+lambda.model5 = bc.model5$x[which.max(bc.model5$y)]
+
+model6 = lm((wind_electricity**lambda.model5-1)/lambda.model5~year, data_china_wind)
+par(mfrow=c(2,2))
+plot(model6)
+summary(model6)
+
+y = (data_china_wind[,'wind_electricity']**lambda.model5-1)/lambda.model5
+plot(data_china_wind[,'year'], y, xlab='Year', 
+     ylab=cbind('BoxCox Lambda=',lambda.model5),
+     main='SLR of Electricity generation from wind, China')
+abline(model6, col='orange', lty=2, lwd=2)
