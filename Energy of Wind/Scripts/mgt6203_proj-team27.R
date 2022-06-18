@@ -1,10 +1,13 @@
 rm(list = ls())
 # code book
 # https://github.com/owid/energy-data/blob/master/owid-energy-codebook.csv
+library(rstudioapi)
 library(tidyverse)
 library(car)
+current_path = rstudioapi::getActiveDocumentContext()$path 
+setwd(dirname(current_path ))
 
-data = read.csv(file = 'data/owid-energy-data.csv', head=TRUE, sep=',')
+data = read.csv(file = paste(getwd(),'/data/owid-energy-data.csv',sep=""), head=TRUE, sep=',')
 # 15 years projection
 future_year = data.frame('year'=c(2022:2036))
 model_col = c('year', 'country', 'wind_electricity', 'gdp', 'population')
@@ -34,7 +37,6 @@ plot(model2)
 summary(model2)
 
 y = (data_germany_wind[,'wind_electricity']**lambda.model1-1)/lambda.model1
-ylabel = cat('asdf',bc.model1)
 plot(data_germany_wind[,'year'], y, xlab='Year', 
      ylab=cbind('BoxCox Lambda=',lambda.model1),
      main='SLR of Electricity generation from wind, Germany')
@@ -51,6 +53,12 @@ plot(model2_total[,'year'], model2_total[,'wind_electricity'], xlab='Year',
      ylab=cbind('BoxCox Lambda=',lambda.model1),
      main='Pre conflict projection of Electricity from wind, Germany ')
 
+# fill up missing gdp data
+data_germany_wind[data_germany_wind['year']==2019, 'gdp'] = 3.885961e+12 * (1+0.006)
+data_germany_wind[data_germany_wind['year']==2020, 'gdp'] = 3.885961e+12 * (1+0.006)*(1-0.046)
+data_germany_wind[data_germany_wind['year']==2021, 'gdp'] = 3.885961e+12 * (1+0.006)*(1-0.046)*(1+0.029)
+cor(data_germany_wind[,c[1,3,4,5]])
+# year gdp and population are highly correlated
 
 # Poland Case
 data_poland = data[data['country']=='Poland',]
@@ -112,8 +120,8 @@ legend(1986, 400, legend=c("Germany", "Poland"),
 # China Case
 data_china = data[data['country']=='China',]
 # Electricity generation from wind, measured in terawatt-hours
-mask_has = data_poland['wind_electricity']>0
-mask_na = is.na(data_poland['wind_electricity'])
+mask_has = data_china['wind_electricity']>0
+mask_na = is.na(data_china['wind_electricity'])
 
 data_china_wind = data_china[!mask_na & mask_has, model_col]
 
@@ -131,3 +139,20 @@ plot(data_china_wind[,'year'], y, xlab='Year',
      ylab=cbind('BoxCox Lambda=',lambda.model5),
      main='SLR of Electricity generation from wind, China')
 abline(model6, col='orange', lty=2, lwd=2)
+
+
+
+
+# financial
+fin_data = read.csv(file = paste(getwd(),'/data/financial.csv',sep=""), head=TRUE, sep=',')
+colnames(fin_data) = c('Year', 'Company', 'Revenue', 'P.L', 'mW.Sold')
+mask_v = fin_data['Company']=='Vestas'
+fin_vestas = fin_data[mask_v,]
+fin_vestas['Revenue'] = as.numeric(unlist(fin_vestas['Revenue']))
+fin_vestas['P.L'] = as.numeric(unlist(fin_vestas['P.L']))
+fin_vestas['mW.Sold'] = as.numeric(unlist(fin_vestas['mW.Sold']))
+
+mask_2007 = data_poland_wind['year']>=2007
+# correlation between poland electricity and vestas mW sold number
+cor(data_poland_wind[mask_2007,'wind_electricity'],fin_vestas[,'mW.Sold'])
+cor(data_poland_wind[mask_2007,'wind_electricity'],fin_vestas[,'Revenue'])
