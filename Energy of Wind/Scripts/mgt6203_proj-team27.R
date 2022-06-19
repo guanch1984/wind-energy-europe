@@ -156,3 +156,4 @@ mask_2007 = data_poland_wind['year']>=2007
 # correlation between poland electricity and vestas mW sold number
 cor(data_poland_wind[mask_2007,'wind_electricity'],fin_vestas[,'mW.Sold'])
 cor(data_poland_wind[mask_2007,'wind_electricity'],fin_vestas[,'Revenue'])
+54.05**
