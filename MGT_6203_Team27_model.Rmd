@@ -1,0 +1,104 @@
+---
+title: "MGT_6203"
+author: "Swathi"
+date: "24/06/2022"
+output: word_document
+---
+
+```{r}
+rm(list=ls())
+library(dplyr)
+library(ggplot2)
+set.seed(200)
+germany_datafile<-read.csv("germany-chart.csv")
+head(germany_datafile,4)
+```
+
+```{r}
+colnames(germany_datafile)
+```
+
+```{r}
+germany_datafile <- germany_datafile %>%
+  rename(Year = ï..Year,
+         Installed_Capacity = Installed.Capacity..MW.,
+         Generation = Generation..GWÂ.h.,
+         Capacity_Factor_percent=Capacity.Factor.in.percent,
+         Capacity_Factor=Capacity.Factor)
+
+
+```
+
+```{r}
+head(germany_datafile,4)
+```
+```{r}
+linear_model1<-lm(Year~Installed_Capacity,data=germany_datafile)
+summary(linear_model1)
+linear_model2<-lm(Year~Generation,data=germany_datafile)
+summary(linear_model2)
+
+```
+```{r}
+p<-ggplot(germany_datafile) +        # Create ggplot2 plot
+  geom_line(aes(x=Year,y=Installed_Capacity,color="purple"))+geom_line(aes(x=Year,
+ y=Generation,color="red"))+ 
+  scale_y_continuous(
+    "Installed_Capacity in MW", 
+    sec.axis = sec_axis(~ . *1000, name = "Generated_Power in GWh")
+  )+labs(title="Germany_WindChart")
+p
+
+
+p + scale_color_manual(name="colour", 
+                        labels = c("MW", 
+                                   "GWh"), 
+                        values = c("red"="red", 
+                                   "purple"="purple"))
+```
+##not a good graph hence converting variables to logs
+
+```{r}
+log_germany_datafile<-germany_datafile
+log_germany_datafile$log_Installed_Capacity<-log(germany_datafile$Installed_Capacity+1)
+log_germany_datafile$log_Capacity_Factor_percent<-log(germany_datafile$Capacity_Factor+1)
+log_germany_datafile$log_PowerGenerated<-log(germany_datafile$Generation+1)
+
+```
+
+
+
+```{r}
+reg_germany_model_1<-lm(Year~log_Installed_Capacity,data=log_germany_datafile)
+summary(reg_germany_model_1)
+reg_germany_model_2<-lm(Year~log_PowerGenerated,data=log_germany_datafile)
+summary(reg_germany_model_2)
+
+```
+
+
+
+```{r}
+plot(reg_germany_model_1)
+plot(reg_germany_model_2)
+
+```
+
+```{r}
+p<-ggplot(log_germany_datafile) +        # Create ggplot2 plot
+  geom_line(aes(x=Year,y=log_Installed_Capacity,color="purple"))+geom_line(aes(x=Year,
+                                                                                                      y=log_PowerGenerated,color="red"))+ 
+  scale_y_continuous(
+    "Installed_Capacity in MW", 
+    sec.axis = sec_axis(~ . *1000, name = "Generated_Power in GWh")
+  )+labs(title="Germany_WindChart")
+p
+
+
+p + scale_color_manual(name="colour", 
+                        labels = c("MW", 
+                                   "GWh"), 
+                        values = c("red"="red", 
+                                   "purple"="purple"))
+```
+
