@@ -1,0 +1,79 @@
+---
+title: "Germany_Total_Wind_Energy"
+author: "Swathi"
+date: "26/06/2022"
+output: word_document
+---
+
+```{r}
+rm(list=ls())
+library(dplyr)
+library(ggplot2)
+set.seed(200)
+germany_totalwind<-read.csv("Germany Total Wind Energy.csv")
+head(germany_totalwind,4)
+```
+
+
+
+```{r}
+colnames(germany_totalwind)
+```
+
+```{r}
+germany_totalwind <- germany_totalwind %>%
+  rename(Year = ï..Year,
+         Onshore_wind_energy = Onshore.wind.energy,
+         Offshore_wind_energy = Offshore.wind.energy)
+
+```
+
+```{r}
+head(germany_totalwind,4)
+```
+
+```{r}
+linear_model1<-lm(Year~Wind,data=germany_totalwind)
+summary(linear_model1)
+```
+
+```{r}
+p<-ggplot(germany_totalwind) +        # Create ggplot2 plot
+  geom_line(aes(x=Year,y=Wind,color="purple"))+labs(title="Germany_TotalAvailableWindEnergy")
+p
+
+p + scale_color_manual(name="colour", 
+                        labels = c("MW"
+                                   ), 
+                        values = c(
+                                   "purple"="purple"))
+```
+
+##not a good graph hence converting variables to logs
+
+```{r}
+log_germany_totalwind<-germany_totalwind
+log_germany_totalwind$log_Wind<-log(germany_totalwind$Wind+1)
+```
+
+```{r}
+reg_germany_total_wind<-lm(Year~log_Wind,data=log_germany_totalwind)
+summary(reg_germany_total_wind)
+
+```
+
+```{r}
+plot(reg_germany_total_wind)
+```
+
+```{r}
+p<-ggplot(log_germany_totalwind) +        # Create ggplot2 plot
+  geom_line(aes(x=Year,y=log_Wind,color="purple"))+labs(title="Germany_TotalAvailableWindEnergy")
+p
+
+p + scale_color_manual(name="colour", 
+                        labels = c("MW"
+                                   ), 
+                        values = c(
+                                   "purple"="purple"))
+```
