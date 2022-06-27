@@ -49,15 +49,17 @@ colnames(model2_year_pred) = colnames(data_germany_wind)
 model2_year_pred['year'] = future_year
 model2_year_pred['wind_electricity'] = model2_pred
 model2_total = rbind(data_germany_wind, model2_year_pred)
-plot(model2_total[,'year'], model2_total[,'wind_electricity'], xlab='Year', 
+
+plot(wind_electricity~year, data = model2_total, 
+     xlab='Year', 
      ylab=cbind('BoxCox Lambda=',lambda.model1),
      main='Pre conflict projection of Electricity from wind, Germany ')
+
 
 # fill up missing gdp data
 data_germany_wind[data_germany_wind['year']==2019, 'gdp'] = 3.885961e+12 * (1+0.006)
 data_germany_wind[data_germany_wind['year']==2020, 'gdp'] = 3.885961e+12 * (1+0.006)*(1-0.046)
 data_germany_wind[data_germany_wind['year']==2021, 'gdp'] = 3.885961e+12 * (1+0.006)*(1-0.046)*(1+0.029)
-cor(data_germany_wind[,c[1,3,4,5]])
 # year gdp and population are highly correlated
 
 # Poland Case
@@ -105,18 +107,6 @@ legend(1986, 400, legend=c("Germany", "Poland"),
        col=c("orange", "red"), lty=1:2, lwd=2:2, cex=0.8)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 # China Case
 data_china = data[data['country']=='China',]
 # Electricity generation from wind, measured in terawatt-hours
@@ -142,6 +132,50 @@ abline(model6, col='orange', lty=2, lwd=2)
 
 
 
+
+
+# Three business case with Gompertz model
+Gompertz <- function(f0, t0, a, c, t) {
+  b = log(-log(f0/a)) + c * t0
+  return(a*exp(-exp(b - c * t)))
+}
+
+
+# 2% scenario wind eletricity generation
+germany.f0 = model2_total$wind_electricity[1]
+germany.year0 = model2_total$year[1]
+germany.a = 390
+germany.c.low = 0.09
+germany.c.mid = 0.15
+germany.c.high = 0.2
+t = c(1986:2050)
+
+germany.Gompertz.low = Gompertz(germany.f0, germany.year0+7, germany.a, germany.c.low, t)
+germany.Gompertz.mid = Gompertz(germany.f0, germany.year0+18, germany.a, germany.c.mid, t)
+germany.Gompertz.high = Gompertz(germany.f0, germany.year0+20, germany.a, germany.c.high, t)
+
+germany.lambda.low = lambda.model1
+germany.lambda.mid = lambda.model1 * 0.95
+germany.lambda.high = lambda.model1 * 0.85
+
+model2.pred.low = (predict(model2, future_year) * germany.lambda.low + 1) ** (1/germany.lambda.low) 
+model2.pred.mid = (predict(model2, future_year) * germany.lambda.mid + 1) ** (1/germany.lambda.mid) 
+model2.pred.high = (predict(model2, future_year) * germany.lambda.high + 1) ** (1/germany.lambda.high) 
+
+plot(wind_electricity~year, data = data_germany_wind, 
+     xlab='Year', xlim = range(1980,2050),
+     ylab='Electricity generation from wind, TWh', ylim = range(0, 500),
+     main='Projections of Electricity Generation from wind, Germany')
+points(future_year$year, model2.pred.low, col='green')
+points(future_year$year, model2.pred.mid, col='purple')
+points(future_year$year, model2.pred.high, col='red')
+abline(h=germany.a, col='red')
+lines(t, germany.Gompertz.low, col='green', lwd=2, lty=2)
+lines(t, germany.Gompertz.mid, col='purple', lwd=2, lty=2)
+lines(t, germany.Gompertz.high, col='red', lwd=2, lty=2)
+legend(1980, 350, legend=c("SLR low prediction", "SLR mid prediction", 'SLR high prediction',
+                           "Gompertz low prediction", "Gompertz mid prediction", 'Gompertz high prediction'),
+       col=rep(c('green', 'purple', 'red'),2), lty=c(rep(1,3), rep(2,3)), cex=0.8)
 
 # financial
 fin_data = read.csv(file = paste(getwd(),'/data/financial.csv',sep=""), head=TRUE, sep=',')
