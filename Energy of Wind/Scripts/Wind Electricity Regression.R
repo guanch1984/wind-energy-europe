@@ -53,7 +53,7 @@ summary(boxgermany_model)
 plot(boxgermany_model)
 
 boxgermanyprediction <- as.matrix((predict(boxgermany_model,testmatrix)*germanlambda+1)^(1/germanlambda))
-boxgermanyprediction <- cbind(testyears,boxprediction)
+boxgermanyprediction <- cbind(testyears,boxgermanyprediction)
 colnames(boxgermanyprediction) <- c("year","wind_electricity")
 boxfullgermany <- rbind(germany,boxgermanyprediction)
 plot(boxfullgermany)
