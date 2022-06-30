@@ -6,6 +6,7 @@ library(tidyverse)
 library(MASS)
 library(dplyr)
 library(forecast)
+bimixt
 
 germany <- data %>% filter(country == "Germany") %>% filter(wind_electricity != 0)
 head(germany)
@@ -43,21 +44,20 @@ slrfullgermany
 
 
 #Box Cox Transformed SLR Germany
-bc <- boxcox(germany$wind_electricity~germany$year)
-lambda <- bc$x[which.max(bc$y)]
-lambda
+germanbc <- boxcox(germany$wind_electricity~germany$year)
+germanlambda <- germanbc$x[which.max(germanbc$y)]
+germanlambda
 
-boxgermany_model <- lm(((wind_electricity^lambda-1)/lambda)~year,germany)
+boxgermany_model <- lm(((wind_electricity^germanlambda-1)/germanlambda)~year,germany)
 summary(boxgermany_model)
 plot(boxgermany_model)
 
-boxprediction <- as.matrix(predict(boxgermany_model,testmatrix))
+boxgermanyprediction <- as.matrix((predict(boxgermany_model,testmatrix)*germanlambda+1)^(1/germanlambda))
 boxgermanyprediction <- cbind(testyears,boxprediction)
 colnames(boxgermanyprediction) <- c("year","wind_electricity")
 boxfullgermany <- rbind(germany,boxgermanyprediction)
 plot(boxfullgermany)
 boxfullgermany
-
 
 
 #SLR Poland
@@ -84,20 +84,21 @@ slrfullpoland
 
 
 #Box Cox Transformed SLR Poland
-bc <- boxcox(poland$wind_electricity~poland$year)
-lambda <- bc$x[which.max(bc$y)]
-lambda
+polandbc <- boxcox(poland$wind_electricity~poland$year)
+polandlambda <- polandbc$x[which.max(polandbc$y)]
+polandlambda
 
-boxpoland_model <- lm(((wind_electricity^lambda-1)/lambda)~year,poland)
+boxpoland_model <- lm(((wind_electricity^polandlambda-1)/polandlambda)~year,poland)
 summary(boxpoland_model)
 plot(boxpoland_model)
 
-boxprediction <- as.matrix(predict(boxpoland_model,testmatrix))
-boxpolandprediction <- cbind(testyears,boxprediction)
+boxpolandprediction <- as.matrix((predict(boxpoland_model,testmatrix)*polandlambda+1)^(1/polandlambda))
+boxpolandprediction <- cbind(testyears,boxpolandprediction)
 colnames(boxpolandprediction) <- c("year","wind_electricity")
 boxfullpoland <- rbind(poland,boxpolandprediction)
 plot(boxfullpoland)
 boxfullpoland
+
 
 
 
