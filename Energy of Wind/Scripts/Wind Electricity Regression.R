@@ -6,7 +6,6 @@ library(tidyverse)
 library(MASS)
 library(dplyr)
 library(forecast)
-bimixt
 
 germany <- data %>% filter(country == "Germany") %>% filter(wind_electricity != 0)
 head(germany)
