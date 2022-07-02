@@ -1,4 +1,5 @@
 rm(list = ls())
+
 # code book
 # https://github.com/owid/energy-data/blob/master/owid-energy-codebook.csv
 library(rstudioapi)
@@ -49,15 +50,17 @@ colnames(model2_year_pred) = colnames(data_germany_wind)
 model2_year_pred['year'] = future_year
 model2_year_pred['wind_electricity'] = model2_pred
 model2_total = rbind(data_germany_wind, model2_year_pred)
-plot(model2_total[,'year'], model2_total[,'wind_electricity'], xlab='Year', 
+
+plot(wind_electricity~year, data = model2_total, 
+     xlab='Year', 
      ylab=cbind('BoxCox Lambda=',lambda.model1),
      main='Pre conflict projection of Electricity from wind, Germany ')
+
 
 # fill up missing gdp data
 data_germany_wind[data_germany_wind['year']==2019, 'gdp'] = 3.885961e+12 * (1+0.006)
 data_germany_wind[data_germany_wind['year']==2020, 'gdp'] = 3.885961e+12 * (1+0.006)*(1-0.046)
 data_germany_wind[data_germany_wind['year']==2021, 'gdp'] = 3.885961e+12 * (1+0.006)*(1-0.046)*(1+0.029)
-cor(data_germany_wind[,c[1,3,4,5]])
 # year gdp and population are highly correlated
 
 # Poland Case
@@ -105,18 +108,6 @@ legend(1986, 400, legend=c("Germany", "Poland"),
        col=c("orange", "red"), lty=1:2, lwd=2:2, cex=0.8)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 # China Case
 data_china = data[data['country']=='China',]
 # Electricity generation from wind, measured in terawatt-hours
@@ -156,4 +147,3 @@ mask_2007 = data_poland_wind['year']>=2007
 # correlation between poland electricity and vestas mW sold number
 cor(data_poland_wind[mask_2007,'wind_electricity'],fin_vestas[,'mW.Sold'])
 cor(data_poland_wind[mask_2007,'wind_electricity'],fin_vestas[,'Revenue'])
-54.05**
