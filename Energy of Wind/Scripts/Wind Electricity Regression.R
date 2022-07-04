@@ -99,8 +99,35 @@ plot(boxfullpoland)
 boxfullpoland
 
 
+# Time Series Model
 
+# Germany
+tsgermany <- ts(germany[,2], start = 1986, end = 2021, frequency = 1)
+tsgermany
+plot.ts(tsgermany)
 
+arimamodel <- auto.arima(tsgermany)
+forecast <- forecast(arimamodel, h=15)
+tspredictiongermany <- as.data.frame(c(2022:2036))
+tspredictiongermany <- cbind(tspredictiongermany,as.data.frame(forecast$upper[,2]))
+colnames(tspredictiongermany) <- c("year", "wind_electricity")
+tspredictiongermany
 
+fulltsgermany <- rbind(germany,tspredictiongermany)
+plot(fulltsgermany, main = "Projection of Wind Electricity From Wind, Germany")
 
+# Time Series Poland
+# Poland
+tspoland <- ts(poland[,2], start = 2001, end = 2021, frequency = 1)
+tspoland
+plot.ts(tspoland)
 
+arimamodel <- auto.arima(tspoland)
+forecast <- forecast(arimamodel, h=15)
+tspredictionpoland <- as.data.frame(c(2022:2036))
+tspredictionpoland <- cbind(tspredictionpoland,as.data.frame(forecast$upper[,2]))
+colnames(tspredictionpoland) <- c("year", "wind_electricity")
+tspredictionpoland
+
+fulltspoland <- rbind(poland,tspredictionpoland)
+plot(fulltspoland, main = "Projection of Wind Electricity From Wind, Germany")
