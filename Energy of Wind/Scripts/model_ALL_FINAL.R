@@ -158,52 +158,52 @@ dev.off()
 
 # Logistic model, Asym/(1+exp((xmid-input)/scal))
 # Germany
-y.low <- nls(installed_cap_MW ~ SSlogis(year, Asym, xmid, scal), data=data_germany)
-summary(y.low)
-Asym = coef(y.low)[1]
-xmid.mid = coef(y.low)[2]-1.3
-scal.mid = coef(y.low)[3]/1.3
+y.low.germany <- nls(installed_cap_MW ~ SSlogis(year, Asym, xmid, scal), data=data_germany)
+summary(y.low.germany)
+Asym.germany = coef(y.low.germany)[1]
+xmid.mid.germany = coef(y.low.germany)[2]-1.3
+scal.mid.germany = coef(y.low.germany)[3]/1.3
 x = c(2020:2080)
-y.mid = Asym/(1+exp((xmid.mid-x)/scal.mid))/1000
+y.mid.germany = Asym.germany/(1+exp((xmid.mid.germany-x)/scal.mid.germany))/1000
 
-xmid.high = coef(y.low)[2]-2
-scal.high = coef(y.low)[3]/2
-y.high = Asym/(1+exp((xmid.high-x)/scal.high))/1000
+xmid.high.germany = coef(y.low.germany)[2]-2
+scal.high.germany = coef(y.low.germany)[3]/2
+y.high.germany = Asym.germany/(1+exp((xmid.high.germany-x)/scal.high.germany))/1000
 
 png(file = '0-germany-logistic-projection.png', width=500, height=500)
 plot(data_germany$year, data_germany$installed_cap_MW/1000,
      xlab='Year', xlim = range(1990,2060),
-     ylab='Installed Capacity in (GW)', ylim = range(0, 250),
+     ylab='Installed Capacity in (GW)', ylim = range(0, 200),
      main='Logistic model projection of wind capacity, Germany')
-curve(predict(y.low, newdata = data.frame(year=x))/1000, add=TRUE, col='green', lty = 2, lwd=2)
-lines(x,y.mid, col='orange', lty = 2, lwd=2)
-lines(x,y.high, col='red', lty = 2, lwd=2)
+curve(predict(y.low.germany, newdata = data.frame(year=x))/1000, add=TRUE, col='green', lty = 2, lwd=2)
+lines(x,y.mid.germany, col='orange', lty = 2, lwd=2)
+lines(x,y.high.germany, col='red', lty = 2, lwd=2)
 abline(h=189, col='purple', lwd=3)
 legend(1990, 180, legend=c("Logistic low prediction", "Logistic mid prediction", 'Logistic high prediction'),
        col=rep(c('green', 'orange', 'red'),1), lty=rep(2,3), cex=0.8)
 dev.off()
 
 # Poland
-y.low <- nls(installed_cap_MW ~ SSlogis(year, Asym, xmid, scal), data=data_poland)
-summary(y.low)
-Asym = coef(y.low)[1]
-xmid.mid = coef(y.low)[2]-4
-scal.mid = coef(y.low)[3]/1.5
+y.low.poland <- nls(installed_cap_MW ~ SSlogis(year, Asym, xmid, scal), data=data_poland)
+summary(y.low.poland)
+Asym.poland = coef(y.low.poland)[1]
+xmid.mid.poland = coef(y.low.poland)[2]-4
+scal.mid.poland = coef(y.low.poland)[3]/1.5
 x = c(2020:2080)
-y.mid = Asym/(1+exp((xmid.mid-x)/scal.mid))/1000
+y.mid.poland = Asym.poland/(1+exp((xmid.mid.poland-x)/scal.mid.poland))/1000
 
-xmid.high = coef(y.low)[2]-6
-scal.high = coef(y.low)[3]/2
-y.high = Asym/(1+exp((xmid.high-x)/scal.high))/1000
+xmid.high.poland = coef(y.low.poland)[2]-6
+scal.high.poland = coef(y.low.poland)[3]/2
+y.high.poland = Asym.poland/(1+exp((xmid.high.poland-x)/scal.high.poland))/1000
 
 png(file = '0-poland-logistic-projection.png', width=500, height=500)
 plot(data_poland$year, data_poland$installed_cap_MW/1000,
      xlab='Year', xlim = range(2000,2080),
      ylab='Installed Capacity in (GW)', ylim = range(0, 70),
      main='Logistic model projection of wind capacity, Poland')
-curve(predict(y.low, newdata = data.frame(year=x))/1000, add=TRUE, col='green', lty = 2, lwd=2)
-lines(x,y.mid, col='orange', lty = 2, lwd=2)
-lines(x,y.high, col='red', lty = 2, lwd=2)
+curve(predict(y.low.poland, newdata = data.frame(year=x))/1000, add=TRUE, col='green', lty = 2, lwd=2)
+lines(x,y.mid.poland, col='orange', lty = 2, lwd=2)
+lines(x,y.high.poland, col='red', lty = 2, lwd=2)
 abline(h=67, col='purple', lwd=3)
 legend(2040, 20, legend=c("Logistic low prediction", "Logistic mid prediction", 'Logistic high prediction'),
        col=rep(c('green', 'orange', 'red'),1), lty=rep(2,3), cex=0.8)
@@ -211,3 +211,36 @@ dev.off()
 
 
 # Financial analysis
+total.cap.low.germany = predict(y.low.germany, newdata = data.frame(year=x))/1000
+pct_change.low.germany = (total.cap.low.germany[2:61] - total.cap.low.germany[1:60])/total.cap.low.germany[1:60]
+pct_change.mid.germany = (y.mid.germany[2:61]-y.mid.germany[1:60])/y.mid.germany[1:60]
+pct_change.high.germany = (y.high.germany[2:61]-y.high.germany[1:60])/y.high.germany[1:60]
+
+total.cap.low.poland = predict(y.low.poland, newdata = data.frame(year=x))/1000
+pct_change.low.poland = (total.cap.low.poland[2:61] - total.cap.low.poland[1:60])/total.cap.low.poland[1:60]
+pct_change.mid.poland = (y.mid.poland[2:61]-y.mid.poland[1:60])/y.mid.poland[1:60]
+pct_change.high.poland = (y.high.poland[2:61]-y.high.poland[1:60])/y.high.poland[1:60]
+
+png(file = '0-germany-yoy-growth.png', width=500, height=500)
+plot(pct_change.high.germany, type='o', lwd=2, col='red',
+     xlab='Future Years', xlim = range(0,30),
+     ylab='Year-over-year growth',
+     main='Logistic model projection of wind capacity 
+     YoY growth, Germany')
+lines(pct_change.mid.germany, type='o', lwd=2, col='orange')
+lines(pct_change.low.germany, type='o', lwd=2, col='green')
+legend(15, 0.15, legend=c("Logistic low prediction", "Logistic mid prediction", 'Logistic high prediction'),
+       col=rep(c('green', 'orange', 'red'),1), lty=rep(1,3), cex=0.8)
+dev.off()
+
+png(file = '0-poland-yoy-growth.png', width=500, height=500)
+plot(pct_change.high.poland, type='o', lwd=2, col='red',
+     xlab='Future Years', xlim = range(0,30),
+     ylab='Year-over-year growth',
+     main='Logistic model projection of wind capacity 
+     YoY growth, Poland')
+lines(pct_change.mid.poland, type='o', lwd=2, col='orange')
+lines(pct_change.low.poland, type='o', lwd=2, col='green')
+legend(15, 0.3, legend=c("Logistic low prediction", "Logistic mid prediction", 'Logistic high prediction'),
+       col=rep(c('green', 'orange', 'red'),1), lty=rep(1,3), cex=0.8)
+dev.off()
