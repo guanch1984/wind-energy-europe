@@ -1,0 +1,8 @@
+INSTRUCTIONS TO RUN
+Open code file Final_code.R
+Select Run All
+
+LIBRARIES USED
+library(rstudioapi)
+library(tidyverse)
+library(car)
