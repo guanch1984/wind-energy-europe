@@ -1,0 +1,51 @@
+---
+title: "financial reports
+author: "Swathi"
+date: "22/07/2022"
+output: word_document
+---
+
+```{r}
+rm(list=ls())
+library(dplyr)
+library(ggplot2)
+set.seed(200)
+fin_datafile<-read.csv("Financial figures for conclusion.csv")
+head(fin_datafile,4)
+```
+
+```{r}
+colnames(fin_datafile)
+```
+
+```{r}
+fin_datafile <- fin_datafile %>%
+  rename(Company = ï..Company,
+         EVSALES=EV.Sales,
+         NetIncome=Net.Income,
+         Revenue=Revenue.Billion..in.Euro)
+```
+
+
+```{r}
+head(fin_datafile,9)
+```
+
+```{r}
+linear_gamesa_model1<-lm(EVSALES~Year,data=subset(fin_datafile,Company=="GAMESA"))
+summary(linear_gamesa_model1)
+linear_vestas_model2<-lm(EVSALES~Year,data=subset(fin_datafile,Company=="VESTAS"))
+summary(linear_vestas_model2)
+```
+
+
+
+
+
+```{r}
+ggplt<-ggplot(data = fin_datafile,aes(x=Year,y=EVSALES, shape = Company ))+
+      geom_point(size=0.5)+theme_classic()
+fin_plot<- ggplt+geom_smooth(method = "lm",formula = y~x,se=FALSE,fullrange=TRUE,aes(color=Company))
+fin_plot
+```
+
