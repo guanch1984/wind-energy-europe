@@ -5,6 +5,10 @@ INSTRUCTIONS TO RUN
 3. To run the entire R code, press the Ctrl+Shift+Enter key.
 4. Code will generate all the graph files in png format. Note: all png files start with '0'
 
+Note:
+first two exploration graphs are generate from data, "owid-energy-data.csv", 
+but graphs are generated from website filter GUI, instead of our own coding.
+
 LIBRARIES USED
 library(rstudioapi)
 library(tidyverse)
