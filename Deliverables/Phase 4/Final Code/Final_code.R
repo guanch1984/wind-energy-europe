@@ -244,3 +244,18 @@ lines(pct_change.low.poland, type='o', lwd=2, col='green')
 legend(15, 0.3, legend=c("Logistic low prediction", "Logistic mid prediction", 'Logistic high prediction'),
        col=rep(c('green', 'orange', 'red'),1), lty=rep(1,3), cex=0.8)
 dev.off()
+
+# Financial section
+rev.data = read.csv(file = 'data/0-financial-rev.csv', head=TRUE, sep=',')
+rev.data$Revenue = as.numeric(rev.data$Revenue)
+colnames(rev.data) = c('Year', 'Company', 'Revenue', 'P.L', 'mW.Sold')
+col_sel = c('Year', 'Company', 'Revenue')
+n = nrow(rev.data)
+rev.data = rev.data[2:n,col_sel]
+ggplot(rev.data, aes(Year, Revenue, group=Company, col=as.factor(Company))) + 
+  geom_point(size=5) +
+  stat_smooth(method = "lm") +
+  labs(y = 'Revenue (mEUR)')
+  
+
+  
