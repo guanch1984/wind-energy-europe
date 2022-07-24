@@ -246,9 +246,10 @@ legend(15, 0.3, legend=c("Logistic low prediction", "Logistic mid prediction", '
 dev.off()
 
 # Financial section
+png(file = '0-vestas-gamesa-rev-plot.png', width=800, height=500)
 rev.data = read.csv(file = 'data/0-financial-rev.csv', head=TRUE, sep=',')
 rev.data$Revenue = as.numeric(rev.data$Revenue)
-colnames(rev.data) = c('Year', 'Company', 'Revenue', 'P.L', 'mW.Sold')
+colnames(rev.data) = c('Year', 'Company', 'Revenue', 'P.L', 'mW.Sold', 'EV2Rev')
 col_sel = c('Year', 'Company', 'Revenue')
 n = nrow(rev.data)
 rev.data = rev.data[2:n,col_sel]
@@ -256,6 +257,18 @@ ggplot(rev.data, aes(Year, Revenue, group=Company, col=as.factor(Company))) +
   geom_point(size=5) +
   stat_smooth(method = "lm") +
   labs(y = 'Revenue (mEUR)')
+dev.off()
   
 
-  
+png(file = '0-vestas-gamesa-ratio-plot.png', width=800, height=500)
+ratio.data = read.csv(file = 'data/0-financial-rev.csv', head=TRUE, sep=',')
+colnames(ratio.data) = c('Year', 'Company', 'Revenue', 'P.L', 'mW.Sold', 'EV2Rev')
+col_sel = c('Year', 'Company', 'EV2Rev')
+n = nrow(ratio.data)
+ratio.data = ratio.data[2:n,col_sel]
+ggplot(ratio.data, aes(Year, EV2Rev, group=Company, col=as.factor(Company))) + 
+  geom_point(size=5) +
+  stat_smooth(method = "lm") +
+  xlim(2017,2021) +
+  labs(y = 'Enterprise Value to Revenue Ratio')
+dev.off()
