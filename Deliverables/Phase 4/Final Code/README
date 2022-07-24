@@ -1,6 +1,9 @@
 INSTRUCTIONS TO RUN
-Open code file Final_code.R
-Select Run All
+
+1. make sure 0-wind-data.csv data file is under /data folder, where source code is.
+2. Open code file Final_code.R
+3. To run the entire R code, press the Ctrl+Shift+Enter key.
+4. Code will generate all the graph files in png format. Note: all png files start with '0'
 
 LIBRARIES USED
 library(rstudioapi)
